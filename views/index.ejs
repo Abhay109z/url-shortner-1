@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SnapLink | Modern & Fast URL Shortener</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+ :root {
+  --bg: #5b0a50;                          
+  --card-bg: rgba(15, 23, 42, 0.75);       
+  --card-border: rgba(56, 189, 248, 0.2);  
+  --accent: #0284c7;                       
+  --accent-hover: #0369a1;                  
+  --accent-glow: rgba(2, 132, 199, 0.35);   
+  --text-main: #f8fafc;                    
+  --text-muted: #94a3b8;                   
+  --success: #10b981;                       
+}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.12) 0px, transparent 50%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 580px;
+    }
+
+    /* Header */
+    .brand {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #a5b4fc;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 9999px;
+      margin-bottom: 16px;
+    }
+
+    .brand h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #ffffff 30%, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .brand p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Card Container */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Form Styles */
+    .input-group {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      color: #64748b;
+      pointer-events: none;
+    }
+
+    input[type="url"],
+    input[type="text"] {
+      width: 100%;
+      padding: 16px 16px 16px 48px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    input[type="url"]:focus,
+    input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-glow);
+    }
+
+    input::placeholder {
+      color: #64748b;
+    }
+
+    button.btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 24px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px var(--accent-glow);
+    }
+
+    button.btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    button.btn-primary:active {
+      transform: translateY(0);
+    }
+
+    /* Result Box */
+    .result-box {
+      margin-top: 24px;
+      padding: 20px;
+      background: rgba(99, 102, 241, 0.05);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 14px;
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-header {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #a5b4fc;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .result-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .result-url {
+      flex: 1;
+      padding: 12px 14px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+      text-decoration: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .result-url:hover {
+      text-decoration: underline;
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: #e2e8f0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .btn-copy.copied {
+      background: var(--success);
+      border-color: var(--success);
+      color: #fff;
+    }
+
+    /* Footer Stats / Features */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 28px;
+      text-align: center;
+    }
+
+    .feature-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .feature-item i {
+      color: #818cf8;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 20px; }
+      .brand h1 { font-size: 1.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrapper">
+    <!-- Header -->
+    <div class="brand">
+      <div class="badge">
+        <i data-lucide="zap" style="width: 14px; height: 14px;"></i>
+        Lightning Fast Redirection
+      </div>
+      <h1>URL SHORTNER</h1>
+    </div>
+
+    <!-- Main Card -->
+    <div class="card">
+      <form action="/shorten" method="POST" class="input-group">
+        <div class="input-wrapper">
+          <i data-lucide="link-2" class="input-icon" style="width: 18px; height: 18px;"></i>
+          <input 
+            type="url" 
+            name="originalUrl" 
+            id="urlInput"
+            placeholder="Paste your long link here" 
+            required 
+            autocomplete="off"
+          />
+        </div>
+        <button type="submit" class="btn-primary">
+          <i data-lucide="scissors" style="width: 18px; height: 18px;"></i>
+          <span>Shorten URL</span>
+        </button>
+      </form>
+
+      <!-- Render Shortened Result -->
+      <% if (shortenedUrl) { %>
+        <div class="result-box">
+          <div class="result-header">
+            <i data-lucide="check-circle" style="width: 14px; height: 14px;"></i>
+            Ready to share
+          </div>
+          <div class="result-row">
+            <a href="<%= shortenedUrl %>" target="_blank" class="result-url" id="shortUrlText">
+              <%= shortenedUrl %>
+            </a>
+            
+            <!-- Copy Button -->
+            <button class="btn-action btn-copy" id="copyBtn" title="Copy to clipboard">
+              <i data-lucide="copy" id="copyIcon" style="width: 16px; height: 16px;"></i>
+            </button>
+            
+            <!-- Open in New Tab Button -->
+            <a href="<%= shortenedUrl %>" target="_blank" class="btn-action" title="Open link">
+              <i data-lucide="external-link" style="width: 16px; height: 16px;"></i>
+            </a>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- Value Props -->
+      <div class="features">
+        <div class="feature-item">
+          <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i>
+          <span>Secure & Safe</span>
+        </div>
+        <div class="feature-item">
+          <i data-lucide="infinity" style="width: 18px; height: 18px;"></i>
+          <span>No Expiration</span>
+        </div>
+        <div class="feature-item">
+          <i data-lucide="gauge" style="width: 18px; height: 18px;"></i>
+          <span>Instant Routing</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Clipboard Copy Handler
+    const copyBtn = document.getElementById('copyBtn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', async () => {
+        const textToCopy = document.getElementById('shortUrlText').innerText.trim();
+        try {
+          await navigator.clipboard.writeText(textToCopy);
+          
+          // Visual Feedback
+          copyBtn.classList.add('copied');
+          copyBtn.innerHTML = `<i data-lucide="check" style="width: 16px; height: 16px;"></i>`;
+          lucide.createIcons();
+
+          setTimeout(() => {
+            copyBtn.classList.remove('copied');
+            copyBtn.innerHTML = `<i data-lucide="copy" style="width: 16px; height: 16px;"></i>`;
+            lucide.createIcons();
+          }, 2000);
+        } catch (err) {
+          console.error('Failed to copy: ', err);
+        }
+      });
+    }
+  </script>
+</body>
+</html>
