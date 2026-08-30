@@ -17,12 +17,12 @@ export const getUrl = async (req, res) => {
     console.log("Url saved to database:", newUrl);
 
     const fullShortUrl = `${req.protocol}://${req.get("host")}/${shortenedUrl}`;
-res.render("index.ejs", { shortenedUrl: fullShortUrl });
-
-    res.render("index.ejs", { shortenedUrl: shorturl });
+    return res.render("index.ejs", { shortenedUrl: fullShortUrl });
   } catch (error) {
     console.error("Error saving URL:", error);
-    res.status(500).send("Server Error");
+    if (!res.headersSent) {
+      return res.status(500).send("Server Error");
+    }
   }
 };
 
@@ -41,9 +41,11 @@ export const redirectToOriginal = async (req, res) => {
       target = `https://${target}`;
     }
 
-    res.redirect(target);
+    return res.redirect(target);
   } catch (error) {
     console.error("Error redirecting:", error);
-    res.status(500).send("Server Error");
+    if (!res.headersSent) {
+      return res.status(500).send("Server Error");
+    }
   }
 };
