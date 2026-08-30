@@ -24,7 +24,7 @@ app.post("/shorten", getUrl);
 app.get("/:shortCode", redirectToOriginal);
 
 
-const PORT = process.env.PORT || 1000;
+const port = process.env.PORT || 1000;
 
 app.listen(port, () => { console.log(`server is running on port ${port}`) });
 
